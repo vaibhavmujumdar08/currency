@@ -15,7 +15,11 @@ const POPULAR_CURRENCIES = [
   { code: "CHF", symbol: "Fr", name: "Swiss Franc" },
   { code: "CNY", symbol: "¥", name: "Chinese Yuan" },
   { code: "INR", symbol: "₹", name: "Indian Rupee" },
-  { code: "KRW", symbol: "₩", name: "South Korean Won" },
+  { code: "SGD", symbol: "S$", name: "Singapore Dollar" },
+  { code: "AED", symbol: "د.إ", name: "UAE Dirham" },
+  { code: "NZD", symbol: "NZ$", name: "New Zealand Dollar" },
+  { code: "BRL", symbol: "R$", name: "Brazilian Real" },
+  { code: "ZAR", symbol: "R", name: "South African Rand" },
   { code: "BTC", symbol: "₿", name: "Bitcoin" },
   { code: "ETH", symbol: "Ξ", name: "Ethereum" },
 ] as const;
@@ -37,6 +41,7 @@ export default function CurrencyConverter() {
   const [showToSearch, setShowToSearch] = useState<boolean>(false);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+  const [activeSelection, setActiveSelection] = useState<"from" | "to">("from");
   const fromButtonRef = useRef<HTMLButtonElement>(null);
   const toButtonRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -285,10 +290,20 @@ export default function CurrencyConverter() {
             </div>
             <div className="absolute inset-0 overflow-hidden">
               {/* Create a grid of symbols with dynamic animations */}
-              {Array.from({ length: 15 }).map((_, index) => {
-                const symbol = ["$", "€", "£", "¥", "₹", "₩", "₿", "Ξ"][
-                  index % 8
+              {Array.from({ length: 20 }).map((_, index) => {
+                const symbols = [
+                  "$",
+                  "€",
+                  "£",
+                  "¥",
+                  "A$",
+                  "C$",
+                  "Fr",
+                  "₹",
+                  "د.إ",
+                  "R$",
                 ];
+                const symbol = symbols[index % symbols.length];
                 const row = Math.floor(index / 5);
                 const col = index % 5;
                 const baseDelay = row * 0.2 + col * 0.3;
@@ -554,10 +569,20 @@ export default function CurrencyConverter() {
             </div>
             <div className="absolute inset-0 overflow-hidden">
               {/* Create a grid of symbols with dynamic animations */}
-              {Array.from({ length: 15 }).map((_, index) => {
-                const symbol = ["$", "€", "£", "¥", "₹", "₩", "₿", "Ξ"][
-                  index % 8
+              {Array.from({ length: 20 }).map((_, index) => {
+                const symbols = [
+                  "$",
+                  "€",
+                  "£",
+                  "¥",
+                  "A$",
+                  "C$",
+                  "Fr",
+                  "₹",
+                  "د.إ",
+                  "R$",
                 ];
+                const symbol = symbols[index % symbols.length];
                 const row = Math.floor(index / 5);
                 const col = index % 5;
                 const baseDelay = row * 0.2 + col * 0.3;
@@ -811,23 +836,54 @@ export default function CurrencyConverter() {
           transition={{ duration: 0.5, delay: 0.5 }}
           className="mt-8 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700"
         >
-          <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4">
-            Popular Currencies
-          </h3>
-          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-12 gap-3">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+              Popular Currencies
+            </h3>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setActiveSelection("from")}
+                className={`px-3 py-1 text-sm rounded-lg transition-all duration-200 ${
+                  activeSelection === "from"
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                }`}
+              >
+                From
+              </button>
+              <button
+                onClick={() => setActiveSelection("to")}
+                className={`px-3 py-1 text-sm rounded-lg transition-all duration-200 ${
+                  activeSelection === "to"
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                }`}
+              >
+                To
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-8 xl:grid-cols-16 gap-2">
             {POPULAR_CURRENCIES.map((currency) => (
               <motion.button
                 key={currency.code}
                 whileHover={{ scale: 1.05, y: -1 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => {
-                  setFromCurrency(currency.code);
-                  setShowFromSearch(false);
+                  if (activeSelection === "from") {
+                    setFromCurrency(currency.code);
+                    setShowFromSearch(false);
+                  } else {
+                    setToCurrency(currency.code);
+                    setShowToSearch(false);
+                  }
                 }}
                 className={`p-2 text-xs border-2 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 dark:border-gray-600 dark:text-white transition-all duration-200 ${
-                  fromCurrency === currency.code
-                    ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 shadow-lg"
-                    : ""
+                  (activeSelection === "from" &&
+                    fromCurrency === currency.code) ||
+                  (activeSelection === "to" && toCurrency === currency.code)
+                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                    : "border-gray-200"
                 }`}
               >
                 <div className="flex flex-col items-center">
