@@ -264,7 +264,7 @@ export default function CurrencyConverter() {
           className="text-center mb-8 relative"
         >
           <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400">
-            Currency Converter
+            ConvertEase
           </h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400 text-lg">
             Convert between currencies with real-time exchange rates
@@ -894,6 +894,37 @@ export default function CurrencyConverter() {
             ))}
           </div>
         </motion.div>
+
+        {/* Footer */}
+        <motion.footer
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.7 }}
+          className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400"
+        >
+          <p className="mb-2">
+            Developed by{" "}
+            <a
+              href="https://github.com/vaibhavmujumdar08"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+            >
+              Vaibhav Mujumdar
+            </a>
+          </p>
+          <p>
+            Powered by{" "}
+            <a
+              href="https://github.com/fawazahmed0/exchange-api"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+            >
+              Exchange-API
+            </a>
+          </p>
+        </motion.footer>
 
         <AnimatePresence>
           {error && (
