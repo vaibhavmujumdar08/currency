@@ -274,21 +274,110 @@ export default function CurrencyConverter() {
             className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden group"
             whileHover={{ scale: 1.01 }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 dark:from-blue-500/10 dark:to-purple-500/10 animate-gradient" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.1),rgba(255,255,255,0))]" />
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 dark:from-blue-500/5 dark:to-purple-500/5" />
+            {/* Large Background Symbol */}
+            <div className="absolute -right-10 -bottom-10 transform opacity-[0.03]">
+              <span className="text-[300px] font-bold text-blue-500 dark:text-blue-400">
+                {POPULAR_CURRENCIES.find((c) => c.code === fromCurrency)
+                  ?.symbol || fromCurrency}
+              </span>
+            </div>
+            <div className="absolute inset-0 overflow-hidden">
+              {/* Create a grid of symbols with dynamic animations */}
+              {Array.from({ length: 15 }).map((_, index) => {
+                const symbol = ["$", "€", "£", "¥", "₹", "₿"][index % 6];
+                const row = Math.floor(index / 5);
+                const col = index % 5;
+                const baseDelay = row * 0.2 + col * 0.3;
+
+                return (
+                  <motion.div
+                    key={`${symbol}-${index}`}
+                    className="absolute text-5xl font-bold"
+                    style={{
+                      background: `linear-gradient(135deg, ${
+                        index % 2 === 0
+                          ? "rgba(59, 130, 246, 0.15)"
+                          : "rgba(99, 102, 241, 0.15)"
+                      } 0%, transparent 100%)`,
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      filter: "drop-shadow(0 0 8px rgba(59, 130, 246, 0.2))",
+                      width: "20%",
+                      height: "33%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    initial={{
+                      x: `${col * 20}%`,
+                      y: `${row * 33}%`,
+                      scale: 0.8,
+                      opacity: 0,
+                    }}
+                    animate={{
+                      x: [
+                        `${col * 20}%`,
+                        `${col * 20 + (index % 2 === 0 ? 12 : -12)}%`,
+                        `${col * 20}%`,
+                      ],
+                      y: [
+                        `${row * 33}%`,
+                        `${row * 33 + (index % 2 === 0 ? 15 : -15)}%`,
+                        `${row * 33}%`,
+                      ],
+                      rotate: [0, index % 2 === 0 ? 180 : -180],
+                      scale: [0.8, 1.4, 0.8],
+                      opacity: [0.4, 0.8, 0.4],
+                    }}
+                    transition={{
+                      duration: 6,
+                      repeat: Infinity,
+                      ease: [0.4, 0, 0.2, 1],
+                      delay: baseDelay,
+                      times: [0, 0.5, 1],
+                    }}
+                  >
+                    {symbol}
+                  </motion.div>
+                );
+              })}
+            </div>
             <div className="relative p-6">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-4 relative h-16">
                 <label className="text-base font-semibold text-gray-900 dark:text-white">
                   From Currency
                 </label>
                 <motion.div
-                  whileHover={{ scale: 1.1 }}
-                  className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center"
+                  whileHover={{ scale: 1.2 }}
+                  animate={{
+                    x: [0, 50, -50, 50, 0],
+                    y: [0, -30, 30, -30, 0],
+                    rotate: [0, 180, -180, 180, 0],
+                    scale: [1, 1.2, 0.8, 1.2, 1],
+                  }}
+                  transition={{
+                    duration: 10,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="absolute right-0 w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shadow-lg"
+                  style={{ zIndex: 10 }}
                 >
-                  <span className="text-xl text-blue-600 dark:text-blue-400">
+                  <motion.span
+                    animate={{
+                      opacity: [1, 0.7, 1, 0.7, 1],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                    className="text-2xl text-blue-600 dark:text-blue-400"
+                  >
                     {POPULAR_CURRENCIES.find((c) => c.code === fromCurrency)
                       ?.symbol || fromCurrency}
-                  </span>
+                  </motion.span>
                 </motion.div>
               </div>
 
@@ -452,21 +541,110 @@ export default function CurrencyConverter() {
             className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden group"
             whileHover={{ scale: 1.01 }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-teal-500/20 dark:from-green-500/10 dark:to-teal-500/10 animate-gradient" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.1),rgba(255,255,255,0))]" />
+            <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-teal-500/5 dark:from-green-500/5 dark:to-teal-500/5" />
+            {/* Large Background Symbol */}
+            <div className="absolute -right-10 -bottom-10 transform opacity-[0.03]">
+              <span className="text-[300px] font-bold text-green-500 dark:text-green-400">
+                {POPULAR_CURRENCIES.find((c) => c.code === toCurrency)
+                  ?.symbol || toCurrency}
+              </span>
+            </div>
+            <div className="absolute inset-0 overflow-hidden">
+              {/* Create a grid of symbols with dynamic animations */}
+              {Array.from({ length: 15 }).map((_, index) => {
+                const symbol = ["$", "€", "£", "¥", "₹", "₿"][index % 6];
+                const row = Math.floor(index / 5);
+                const col = index % 5;
+                const baseDelay = row * 0.2 + col * 0.3;
+
+                return (
+                  <motion.div
+                    key={`${symbol}-${index}`}
+                    className="absolute text-5xl font-bold"
+                    style={{
+                      background: `linear-gradient(135deg, ${
+                        index % 2 === 0
+                          ? "rgba(16, 185, 129, 0.15)"
+                          : "rgba(5, 150, 105, 0.15)"
+                      } 0%, transparent 100%)`,
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      filter: "drop-shadow(0 0 8px rgba(16, 185, 129, 0.2))",
+                      width: "20%",
+                      height: "33%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    initial={{
+                      x: `${col * 20}%`,
+                      y: `${row * 33}%`,
+                      scale: 0.8,
+                      opacity: 0,
+                    }}
+                    animate={{
+                      x: [
+                        `${col * 20}%`,
+                        `${col * 20 + (index % 2 === 0 ? 12 : -12)}%`,
+                        `${col * 20}%`,
+                      ],
+                      y: [
+                        `${row * 33}%`,
+                        `${row * 33 + (index % 2 === 0 ? 15 : -15)}%`,
+                        `${row * 33}%`,
+                      ],
+                      rotate: [0, index % 2 === 0 ? 180 : -180],
+                      scale: [0.8, 1.4, 0.8],
+                      opacity: [0.4, 0.8, 0.4],
+                    }}
+                    transition={{
+                      duration: 6,
+                      repeat: Infinity,
+                      ease: [0.4, 0, 0.2, 1],
+                      delay: baseDelay,
+                      times: [0, 0.5, 1],
+                    }}
+                  >
+                    {symbol}
+                  </motion.div>
+                );
+              })}
+            </div>
             <div className="relative p-6">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-4 relative h-16">
                 <label className="text-base font-semibold text-gray-900 dark:text-white">
                   To Currency
                 </label>
                 <motion.div
-                  whileHover={{ scale: 1.1 }}
-                  className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center"
+                  whileHover={{ scale: 1.2 }}
+                  animate={{
+                    x: [0, -50, 50, -50, 0],
+                    y: [0, 30, -30, 30, 0],
+                    rotate: [0, -180, 180, -180, 0],
+                    scale: [1, 1.2, 0.8, 1.2, 1],
+                  }}
+                  transition={{
+                    duration: 10,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="absolute right-0 w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center shadow-lg"
+                  style={{ zIndex: 10 }}
                 >
-                  <span className="text-xl text-green-600 dark:text-green-400">
+                  <motion.span
+                    animate={{
+                      opacity: [1, 0.7, 1, 0.7, 1],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                    className="text-2xl text-green-600 dark:text-green-400"
+                  >
                     {POPULAR_CURRENCIES.find((c) => c.code === toCurrency)
                       ?.symbol || toCurrency}
-                  </span>
+                  </motion.span>
                 </motion.div>
               </div>
 
