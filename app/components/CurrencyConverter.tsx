@@ -6,18 +6,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 
 const POPULAR_CURRENCIES = [
-  { code: "USD", name: "US Dollar", symbol: "$" },
-  { code: "EUR", name: "Euro", symbol: "€" },
-  { code: "GBP", name: "British Pound", symbol: "£" },
-  { code: "JPY", name: "Japanese Yen", symbol: "¥" },
-  { code: "AUD", name: "Australian Dollar", symbol: "A$" },
-  { code: "CAD", name: "Canadian Dollar", symbol: "C$" },
-  { code: "CHF", name: "Swiss Franc", symbol: "Fr" },
-  { code: "CNY", name: "Chinese Yuan", symbol: "¥" },
-  { code: "INR", name: "Indian Rupee", symbol: "₹" },
-  { code: "BTC", name: "Bitcoin", symbol: "₿" },
-  { code: "ETH", name: "Ethereum", symbol: "Ξ" },
-];
+  { code: "USD", symbol: "$", name: "US Dollar" },
+  { code: "EUR", symbol: "€", name: "Euro" },
+  { code: "GBP", symbol: "£", name: "British Pound" },
+  { code: "JPY", symbol: "¥", name: "Japanese Yen" },
+  { code: "AUD", symbol: "A$", name: "Australian Dollar" },
+  { code: "CAD", symbol: "C$", name: "Canadian Dollar" },
+  { code: "CHF", symbol: "Fr", name: "Swiss Franc" },
+  { code: "CNY", symbol: "¥", name: "Chinese Yuan" },
+  { code: "INR", symbol: "₹", name: "Indian Rupee" },
+  { code: "KRW", symbol: "₩", name: "South Korean Won" },
+  { code: "BTC", symbol: "₿", name: "Bitcoin" },
+  { code: "ETH", symbol: "Ξ", name: "Ethereum" },
+] as const;
 
 export default function CurrencyConverter() {
   const [currencies, setCurrencies] = useState<{ [key: string]: string }>({});
@@ -285,7 +286,9 @@ export default function CurrencyConverter() {
             <div className="absolute inset-0 overflow-hidden">
               {/* Create a grid of symbols with dynamic animations */}
               {Array.from({ length: 15 }).map((_, index) => {
-                const symbol = ["$", "€", "£", "¥", "₹", "₿"][index % 6];
+                const symbol = ["$", "€", "£", "¥", "₹", "₩", "₿", "Ξ"][
+                  index % 8
+                ];
                 const row = Math.floor(index / 5);
                 const col = index % 5;
                 const baseDelay = row * 0.2 + col * 0.3;
@@ -552,7 +555,9 @@ export default function CurrencyConverter() {
             <div className="absolute inset-0 overflow-hidden">
               {/* Create a grid of symbols with dynamic animations */}
               {Array.from({ length: 15 }).map((_, index) => {
-                const symbol = ["$", "€", "£", "¥", "₹", "₿"][index % 6];
+                const symbol = ["$", "€", "£", "¥", "₹", "₩", "₿", "Ξ"][
+                  index % 8
+                ];
                 const row = Math.floor(index / 5);
                 const col = index % 5;
                 const baseDelay = row * 0.2 + col * 0.3;
