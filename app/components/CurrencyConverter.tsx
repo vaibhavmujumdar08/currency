@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { getCurrencies, getExchangeRates } from "../types/currency";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
@@ -39,7 +39,6 @@ export default function CurrencyConverter() {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [showFromSearch, setShowFromSearch] = useState<boolean>(false);
   const [showToSearch, setShowToSearch] = useState<boolean>(false);
-  const [isHovered, setIsHovered] = useState<boolean>(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [activeSelection, setActiveSelection] = useState<"from" | "to">("from");
   const fromButtonRef = useRef<HTMLButtonElement>(null);
@@ -52,7 +51,7 @@ export default function CurrencyConverter() {
     maxHeight: 0,
   });
 
-  const loadCurrencies = async () => {
+  const loadCurrencies = useCallback(async () => {
     try {
       const data = await getCurrencies(date);
       setCurrencies(data);
@@ -62,13 +61,14 @@ export default function CurrencyConverter() {
       setIsLoading(false);
       console.error("Error loading currencies:", error);
     }
-  };
+  }, [date]);
 
-  const convertCurrency = async () => {
+  const convertCurrency = useCallback(async () => {
     try {
       setIsConverting(true);
       const rates = await getExchangeRates(fromCurrency, date);
-      const rate = rates[fromCurrency.toLowerCase()][toCurrency.toLowerCase()];
+      const ratesForCurrency = rates[fromCurrency.toLowerCase()] as Record<string, number>;
+      const rate = ratesForCurrency[toCurrency.toLowerCase()];
       const result = (parseFloat(amount) * rate).toFixed(2);
       setConvertedAmount(result);
       setError("");
@@ -78,7 +78,7 @@ export default function CurrencyConverter() {
     } finally {
       setIsConverting(false);
     }
-  };
+  }, [amount, fromCurrency, toCurrency, date]);
 
   const filteredCurrencies = Object.entries(currencies).filter(
     ([code, name]) =>
@@ -94,7 +94,7 @@ export default function CurrencyConverter() {
     if (amount && fromCurrency && toCurrency) {
       convertCurrency();
     }
-  }, [amount, fromCurrency, toCurrency, date, convertCurrency]);
+  }, [amount, fromCurrency, toCurrency, convertCurrency]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -405,10 +405,10 @@ export default function CurrencyConverter() {
                 <button
                   ref={fromButtonRef}
                   onClick={handleFromButtonClick}
+                  aria-expanded={showFromSearch ? "true" : "false"}
+                  aria-controls={showFromSearch ? "from-currency-dropdown" : ""}
                   className="w-full p-4 border-2 rounded-2xl focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-left flex justify-between items-center transition-all duration-200 hover:border-blue-500 dark:hover:border-blue-500 group"
                   aria-label="Select from currency"
-                  aria-expanded={showFromSearch}
-                  aria-controls="from-currency-dropdown"
                 >
                   <div className="flex items-center space-x-4">
                     <span className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -684,10 +684,10 @@ export default function CurrencyConverter() {
                 <button
                   ref={toButtonRef}
                   onClick={handleToButtonClick}
+                  aria-expanded={showToSearch ? "true" : "false"}
+                  aria-controls={showToSearch ? "to-currency-dropdown" : ""}
                   className="w-full p-4 border-2 rounded-2xl focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-left flex justify-between items-center transition-all duration-200 hover:border-blue-500 dark:hover:border-blue-500 group"
                   aria-label="Select to currency"
-                  aria-expanded={showToSearch}
-                  aria-controls="to-currency-dropdown"
                 >
                   <div className="flex items-center space-x-4">
                     <span className="text-3xl font-bold text-gray-900 dark:text-white">
