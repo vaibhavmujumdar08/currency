@@ -5,7 +5,7 @@ export interface Currency {
 
 export interface CurrencyRates {
   date: string;
-  [key: string]: any;
+  [key: string]: string | Record<string, number>;
 }
 
 export const API_BASE_URL = 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1';
@@ -14,9 +14,9 @@ export const FALLBACK_BASE_URL = 'https://api.exchangerate.host';
 export const BACKUP_BASE_URL = 'https://api.exchangerate-api.com/v4/latest';
 
 const CACHE_DURATION = 1000 * 60 * 60; // 1 hour
-const cache = new Map<string, { data: any; timestamp: number }>();
+const cache = new Map<string, { data: Record<string, unknown>; timestamp: number }>();
 
-export async function fetchWithFallback(endpoint: string, date: string = 'latest'): Promise<any> {
+export async function fetchWithFallback(endpoint: string, date: string = 'latest'): Promise<Record<string, unknown>> {
   const cacheKey = `${endpoint}-${date}`;
   const cached = cache.get(cacheKey);
   
@@ -27,15 +27,15 @@ export async function fetchWithFallback(endpoint: string, date: string = 'latest
   const apis = [
     {
       url: API_BASE_URL,
-      transform: (data: any) => data
+      transform: (data: Record<string, unknown>) => data
     },
     {
       url: CLOUDFLARE_BASE_URL,
-      transform: (data: any) => data
+      transform: (data: Record<string, unknown>) => data
     },
     {
       url: FALLBACK_BASE_URL,
-      transform: (data: any) => {
+      transform: (data: { rates: Record<string, number> }) => {
         if (endpoint.includes('currencies.json')) {
           return data.rates;
         }
@@ -46,7 +46,7 @@ export async function fetchWithFallback(endpoint: string, date: string = 'latest
     },
     {
       url: BACKUP_BASE_URL,
-      transform: (data: any) => {
+      transform: (data: { rates: Record<string, number> }) => {
         if (endpoint.includes('currencies.json')) {
           return data.rates;
         }
@@ -78,19 +78,25 @@ export async function fetchWithFallback(endpoint: string, date: string = 'latest
 }
 
 export async function getCurrencies(date: string = 'latest'): Promise<{ [key: string]: string }> {
-  const data = await fetchWithFallback('/currencies.json', date);
-  return data.currencies || data;
+  const data = await fetchWithFallback('/currencies.json', date) as { currencies?: { [key: string]: string }; [key: string]: unknown };
+  return data.currencies || data as { [key: string]: string };
 }
 
 export async function getExchangeRates(baseCurrency: string, date: string = 'latest'): Promise<CurrencyRates> {
   try {
-    const data = await fetchWithFallback(`/currencies/${baseCurrency.toLowerCase()}.json`, date);
+    const data = await fetchWithFallback(`/currencies/${baseCurrency.toLowerCase()}.json`, date) as {
+      date?: string;
+      rates?: Record<string, number>;
+      [key: string]: Record<string, number> | string | undefined;
+    };
+    
     if (!data || (!data.rates && !data[baseCurrency.toLowerCase()])) {
       throw new Error('Invalid response format');
     }
+    
     return {
       date: data.date || new Date().toISOString().split('T')[0],
-      [baseCurrency.toLowerCase()]: data.rates || data[baseCurrency.toLowerCase()]
+      [baseCurrency.toLowerCase()]: data.rates || data[baseCurrency.toLowerCase()] as Record<string, number>
     };
   } catch (error) {
     console.error('Error fetching exchange rates:', error);

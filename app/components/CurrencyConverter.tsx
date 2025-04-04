@@ -33,7 +33,7 @@ export default function CurrencyConverter() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isConverting, setIsConverting] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-  const [date, setDate] = useState<string>(
+  const [date] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -52,6 +52,34 @@ export default function CurrencyConverter() {
     maxHeight: 0,
   });
 
+  const loadCurrencies = async () => {
+    try {
+      const data = await getCurrencies(date);
+      setCurrencies(data);
+      setIsLoading(false);
+    } catch (error) {
+      setError("Failed to load currencies");
+      setIsLoading(false);
+      console.error("Error loading currencies:", error);
+    }
+  };
+
+  const convertCurrency = async () => {
+    try {
+      setIsConverting(true);
+      const rates = await getExchangeRates(fromCurrency, date);
+      const rate = rates[fromCurrency.toLowerCase()][toCurrency.toLowerCase()];
+      const result = (parseFloat(amount) * rate).toFixed(2);
+      setConvertedAmount(result);
+      setError("");
+    } catch (error) {
+      setError("Failed to convert currency");
+      console.error("Error converting currency:", error);
+    } finally {
+      setIsConverting(false);
+    }
+  };
+
   const filteredCurrencies = Object.entries(currencies).filter(
     ([code, name]) =>
       code.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -60,13 +88,13 @@ export default function CurrencyConverter() {
 
   useEffect(() => {
     loadCurrencies();
-  }, []);
+  }, [loadCurrencies]);
 
   useEffect(() => {
     if (amount && fromCurrency && toCurrency) {
       convertCurrency();
     }
-  }, [amount, fromCurrency, toCurrency, date]);
+  }, [amount, fromCurrency, toCurrency, date, convertCurrency]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -131,32 +159,6 @@ export default function CurrencyConverter() {
           setAmount((newAmount - 1).toString());
         }
         break;
-    }
-  };
-
-  const loadCurrencies = async () => {
-    try {
-      const data = await getCurrencies(date);
-      setCurrencies(data);
-      setIsLoading(false);
-    } catch (err) {
-      setError("Failed to load currencies");
-      setIsLoading(false);
-    }
-  };
-
-  const convertCurrency = async () => {
-    try {
-      setIsConverting(true);
-      const rates = await getExchangeRates(fromCurrency, date);
-      const rate = rates[fromCurrency.toLowerCase()][toCurrency.toLowerCase()];
-      const result = (parseFloat(amount) * rate).toFixed(2);
-      setConvertedAmount(result);
-      setError("");
-    } catch (err) {
-      setError("Failed to convert currency");
-    } finally {
-      setIsConverting(false);
     }
   };
 
